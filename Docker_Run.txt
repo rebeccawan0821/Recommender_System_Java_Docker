@@ -1,1 +1,48 @@
 # How to Run Project On Docker
+
+# Step1: Create Hadoop Cluster on Docker
+
+$ mkdir recommenderSystem
+$ cd recommenderSystem
+$ sudo docker pull joway/hadoop-cluster # pull container setting image from dockerhub
+$ sudo docker network create --driver=bridge hadoop #creat docker bridge for hadoop nodes
+$ git clone https://github.com/joway/hadoop-cluster-docker # clone setting scripts repo from github
+$ cd hadoop-cluster-docker
+
+
+# Step2: Run Hadoop in Docker Container
+
+$ sudo ./start-container.sh     #default node is 3, logged into master node
+$ ./start-hadoop.sh.            #start Hadoop in master node
+
+
+# Step3: Run Recommendation System Project
+
+# 3.1 Create input folder on hdfs
+$ hdfs dfs -mkdir /input
+
+# 3.2 upload input data to hdfs
+$ hdfs dfs -put input/* /input 
+
+# 3.3 Remove historical output path in hdfs (if necessary)
+hdfs dfs -rm -r /dataDividedByUser
+
+hdfs dfs -rm -r /coOccurrenceMatrix
+
+hdfs dfs -rm -r /Normalize
+
+hdfs dfs -rm -r /Multiplication
+
+hdfs dfs -rm -r /Sum
+
+
+# 3.4 To the recommender system program, compile java program on Hadoop master node, then generate a runnable package
+$ cd src/main/java/
+$ hadoop com.sun.tools.javac.Main *.java
+$ jar cf recommender.jar *.class
+
+#3.5 Run the package
+$ hadoop jar recommender.jar Driver /input /dataDividedByUser /coOccurrenceMatrix /Normalize /Multiplication /Sum
+
+# 3.6 Check the result
+$ hdfs dfs -cat /Sum/*
