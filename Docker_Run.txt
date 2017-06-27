@@ -46,3 +46,9 @@ $ hadoop jar recommender.jar Driver /input /dataDividedByUser /coOccurrenceMatri
 
 # 3.6 Check the result
 $ hdfs dfs -cat /Sum/*
+
+
+
+# Remove Container After project finished
+$ sudo docker kill $(docker ps -a -q)
+$ sudo docker rm $(docker ps -a -q)
